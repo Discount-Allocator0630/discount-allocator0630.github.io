@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Layer / Field Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #f4f0e8;
+    --paper-shade: #ebe5d6;
+    --ink: #1a1a1a;
+    --ink-soft: #4a4540;
+    --rule: #1a1a1a;
+    --accent: #d72c0d;
+    --accent-soft: #f4d4cc;
+    --success: #008060;
+    --success-soft: #d4ebdd;
+    --warning: #b25e00;
+    --warning-soft: #f4e0c4;
+    --mono: 'JetBrains Mono', ui-monospace, monospace;
+    --serif: 'Inter', -apple-system, sans-serif;
+    --display: 'Instrument Serif', Georgia, serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--serif);
+    font-feature-settings: "ss01", "ss02";
+    line-height: 1.5;
+    overflow-x: hidden;
+    /* paper grain */
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(0,0,0,0.012) 0%, transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(0,0,0,0.012) 0%, transparent 50%);
+  }
+
+  /* ===== MASTHEAD ===== */
+  .masthead {
+    border-bottom: 1px solid var(--rule);
+    padding: 28px 64px 22px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+  .masthead .left,
+  .masthead .right {
+    display: flex;
+    gap: 18px;
+    color: var(--ink-soft);
+  }
+
+  /* ===== TITLE BLOCK ===== */
+  .hero {
+    padding: 96px 64px 120px;
+    border-bottom: 3px double var(--rule);
+    position: relative;
+  }
+  .kicker {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .kicker::before {
+    content: "";
+    width: 32px;
+    height: 1px;
+    background: var(--accent);
+  }
+  h1.title {
+    font-family: var(--display);
+    font-weight: 400;
+    font-style: normal;
+    font-size: clamp(56px, 10vw, 144px);
+    line-height: 0.92;
+    letter-spacing: -0.02em;
+    margin-bottom: 28px;
+  }
+  h1.title .b {
+    font-style: normal;
+    font-weight: 400;
+  }
+  h1.title em {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--accent);
+  }
+  .subtitle {
+    font-family: var(--serif);
+    font-size: clamp(17px, 1.6vw, 20px);
+    max-width: 720px;
+    color: var(--ink-soft);
+    font-weight: 400;
+    line-height: 1.55;
+  }
+  .deck {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    margin-top: 56px;
+    padding-top: 24px;
+    border-top: 1px solid var(--rule);
+  }
+  .deck .stat {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .deck .stat strong {
+    display: block;
+    font-family: var(--display);
+    font-style: normal;
+    font-weight: 400;
+    font-size: clamp(32px, 4vw, 52px);
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    margin-top: 4px;
+    text-transform: none;
+  }
+
+  /* ===== SECTION CHROME ===== */
+  section { padding: 120px 64px; border-bottom: 1px solid var(--rule); }
+  .section-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-bottom: 18px;
+  }
+  h2.section-title {
+    font-family: var(--display);
+    font-weight: 400;
+    font-style: normal;
+    font-size: clamp(42px, 5.5vw, 72px);
+    letter-spacing: -0.015em;
+    line-height: 1;
+    margin-bottom: 72px;
+    max-width: 900px;
+  }
+
+  /* ===== BRIEF SECTION ===== */
+  .brief {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    gap: 64px;
+    max-width: 1400px;
+  }
+  .brief-left .pull {
+    font-family: var(--display);
+    font-size: clamp(30px, 3.2vw, 44px);
+    font-weight: 400;
+    font-style: normal;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+  }
+  .brief-left .pull em {
+    color: var(--accent);
+    font-style: italic;
+  }
+  .brief-right p {
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--ink-soft);
+    margin-bottom: 18px;
+  }
+  .brief-right p:first-letter {
+    font-family: var(--display);
+    font-size: 68px;
+    line-height: 0.82;
+    float: left;
+    font-style: normal;
+    font-weight: 400;
+    margin: 6px 12px -4px 0;
+    color: var(--ink);
+  }
+
+  /* ===== TIMELINE — EDITORIAL CHAPTERS ===== */
+  .timeline-wrap { position: relative; max-width: 1240px; }
+
+  .timeline-controls {
+    display: flex;
+    gap: 0;
+    margin-bottom: 80px;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    flex-wrap: wrap;
+  }
+  .filter-btn {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding: 18px 24px;
+    background: transparent;
+    border: none;
+    border-right: 1px solid var(--rule);
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: color 0.2s, background 0.2s;
+    position: relative;
+  }
+  .filter-btn:last-child { border-right: none; }
+  .filter-btn:hover { color: var(--ink); }
+  .filter-btn.active { color: var(--ink); }
+  .filter-btn.active::after {
+    content: "";
+    position: absolute;
+    left: 24px;
+    right: 24px;
+    bottom: -1px;
+    height: 2px;
+    background: var(--accent);
+  }
+
+  .timeline { position: relative; }
+
+  .station {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 64px;
+    padding: 72px 0;
+    border-bottom: 1px solid var(--rule);
+    cursor: pointer;
+    transition: opacity 0.3s;
+    align-items: start;
+  }
+  .station:first-child { padding-top: 8px; }
+  .station:last-child { border-bottom: none; }
+  .station.hidden { display: none; }
+
+  .station-meta { position: relative; }
+  .station-num {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: clamp(72px, 8vw, 112px);
+    line-height: 0.9;
+    letter-spacing: -0.04em;
+    color: var(--ink);
+    display: block;
+  }
+  .station-tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-top: 20px;
+    display: inline-block;
+    padding: 8px 0 0;
+    border-top: 1px solid var(--ink);
+    min-width: 140px;
+  }
+  .station[data-kind="root"] .station-num { color: var(--accent); }
+  .station[data-kind="root"] .station-tag { color: var(--accent); border-top-color: var(--accent); }
+  .station[data-kind="win"] .station-num { color: var(--success); }
+  .station[data-kind="win"] .station-tag { color: var(--success); border-top-color: var(--success); }
+  .station[data-kind="trap"] .station-num { color: var(--warning); }
+  .station[data-kind="trap"] .station-tag { color: var(--warning); border-top-color: var(--warning); }
+
+  .station-body { padding: 0; background: transparent; border: none; }
+  .station:hover .station-body { transform: none; box-shadow: none; }
+  .station.expanded .station-body { background: transparent; box-shadow: none; transform: none; }
+
+  .station-head { display: block; }
+  .station-title {
+    font-family: var(--display);
+    font-size: clamp(28px, 3vw, 42px);
+    font-weight: 400;
+    font-style: normal;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    margin-bottom: 20px;
+    max-width: 640px;
+  }
+  .station-symptom {
+    font-family: var(--serif);
+    font-size: 17px;
+    color: var(--ink-soft);
+    line-height: 1.6;
+    max-width: 620px;
+  }
+
+  .station-detail {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), margin-top 0.4s ease, opacity 0.4s ease;
+  }
+  .station.expanded .station-detail {
+    max-height: 2400px;
+    margin-top: 36px;
+    opacity: 1;
+  }
+  .station-detail > div {
+    padding-top: 36px;
+    border-top: 1px solid var(--rule);
+    max-width: 660px;
+  }
+  .station-detail p {
+    font-family: var(--serif);
+    font-size: 16px;
+    line-height: 1.75;
+    color: var(--ink-soft);
+    margin-bottom: 18px;
+  }
+  .station-detail .lesson {
+    font-family: var(--display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(22px, 2.2vw, 30px);
+    line-height: 1.3;
+    color: var(--ink);
+    border-left: none;
+    border-top: 1px solid var(--rule);
+    padding: 28px 0 8px;
+    margin-top: 28px;
+    max-width: 540px;
+  }
+  .station-detail code {
+    font-family: var(--mono);
+    font-size: 13px;
+    background: var(--paper-shade);
+    padding: 2px 7px;
+    border: none;
+  }
+  .station-detail .codeblock {
+    font-family: var(--mono);
+    font-size: 12px;
+    background: var(--ink);
+    color: var(--paper);
+    padding: 22px 24px;
+    margin: 22px 0;
+    line-height: 1.7;
+    overflow-x: auto;
+    white-space: pre;
+    border: none;
+  }
+
+  .expand-cue {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-top: 28px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: color 0.2s, gap 0.2s;
+  }
+  .station:hover .expand-cue { color: var(--ink); gap: 14px; }
+  .station.expanded .expand-cue { color: var(--accent); }
+  .expand-cue::after {
+    content: "+";
+    font-size: 14px;
+    transition: transform 0.3s;
+    display: inline-block;
+    line-height: 1;
+  }
+  .station.expanded .expand-cue::after { transform: rotate(45deg); }
+  .station:not(.expanded) .expand-cue::before { content: "Read the chase"; }
+  .station.expanded .expand-cue::before { content: "Close chapter"; }
+
+  /* zero-state when filter has no results */
+  .timeline-empty {
+    padding: 96px 0;
+    text-align: center;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    display: none;
+  }
+  .timeline-empty.show { display: block; }
+  .timeline-empty .em-title {
+    font-family: var(--display);
+    font-size: 36px;
+    font-weight: 400;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+  .timeline-empty .em-sub {
+    font-family: var(--serif);
+    font-size: 15px;
+    color: var(--ink-soft);
+  }
+
+  /* ===== METHOD SECTION ===== */
+  .method-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+  }
+  .method {
+    border-top: 1px solid var(--ink);
+    padding-top: 18px;
+  }
+  .method-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+  }
+  .method h3 {
+    font-family: var(--display);
+    font-style: normal;
+    font-weight: 400;
+    font-size: 30px;
+    letter-spacing: -0.01em;
+    line-height: 1.1;
+    margin: 8px 0 12px;
+  }
+  .method p {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+  }
+
+  /* ===== RESULT / DASHBOARD ===== */
+  .result-wrap {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 64px;
+    align-items: center;
+  }
+  .result-copy h3 {
+    font-family: var(--display);
+    font-style: normal;
+    font-weight: 400;
+    font-size: clamp(30px, 3.2vw, 48px);
+    line-height: 1.1;
+    letter-spacing: -0.015em;
+    margin-bottom: 20px;
+  }
+  .result-copy p {
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--ink-soft);
+    margin-bottom: 14px;
+  }
+  .dashboard-mock {
+    background: white;
+    border: 1px solid var(--rule);
+    box-shadow: 8px 8px 0 var(--ink);
+    padding: 28px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+  .dash-title {
+    font-size: 14px;
+    color: #6b6b6b;
+    margin-bottom: 4px;
+  }
+  .dash-score-row {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+    padding: 14px 0 22px;
+    border-bottom: 1px solid #e5e5e5;
+    margin-bottom: 22px;
+  }
+  .ring-wrap { position: relative; width: 100px; height: 100px; flex-shrink: 0; }
+  .ring-wrap svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .ring-wrap .ring-bg { fill: none; stroke: #eaeaea; stroke-width: 9; }
+  .ring-wrap .ring-fg { fill: none; stroke: #b25e00; stroke-width: 9; stroke-linecap: round; }
+  .ring-num {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; font-weight: 700; color: #b25e00;
+  }
+  .ring-num small { font-size: 10px; color: #888; margin-left: 2px; font-weight: 400; }
+  .dash-headline {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 4px;
+  }
+  .dash-sub {
+    font-size: 13px;
+    color: #6b6b6b;
+    margin-bottom: 8px;
+    line-height: 1.45;
+  }
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 4px;
+  }
+  .badge.warn { background: #fcf2d1; color: #8b4f00; }
+  .badge.crit { background: #fbd7d2; color: #a02211; }
+  .badge.ok { background: #d4ebdd; color: #006442; }
+  .check-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 11px 0;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .check-row:last-child { border-bottom: none; }
+  .check-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #1a1a1a;
+  }
+  .check-detail {
+    font-size: 12px;
+    color: #888;
+    margin-top: 2px;
+  }
+  .check-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .check-count {
+    font-size: 12px;
+    color: #888;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ===== FOOTER ===== */
+  footer {
+    padding: 64px;
+    border-top: 3px double var(--rule);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 18px;
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 880px) {
+    section, .hero { padding: 64px 24px; }
+    .masthead { padding: 18px 24px; flex-wrap: wrap; gap: 12px; }
+    .hero { padding-top: 56px; padding-bottom: 72px; }
+    h2.section-title { margin-bottom: 48px; }
+    .deck { grid-template-columns: 1fr 1fr; }
+    .brief { grid-template-columns: 1fr; gap: 32px; }
+    .method-grid { grid-template-columns: 1fr; gap: 24px; }
+    .result-wrap { grid-template-columns: 1fr; gap: 36px; }
+    .station {
+      grid-template-columns: 1fr;
+      gap: 24px;
+      padding: 48px 0;
+    }
+    .station-meta {
+      display: flex;
+      align-items: baseline;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    .station-num { font-size: 56px; }
+    .station-tag { margin-top: 0; }
+    .filter-btn { padding: 14px 16px; font-size: 9px; }
+    footer { padding: 36px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="left">
+    <span>AI Layer / Field Notes</span>
+    <span>Vol. 01</span>
+  </div>
+  <div class="right">
+    <span>Shopify Embedded App</span>
+    <span>Engineering Diary</span>
+    <span>Jun 2026</span>
+  </div>
+</header>
+
+<!-- ===== HERO ===== -->
+<div class="hero">
+  <div class="kicker">A debugging case study</div>
+  <h1 class="title">
+    The <span class="b">empty<br>braces</span> <em>that ate<br>three days.</em>
+  </h1>
+  <p class="subtitle">
+    How a Shopify embedded app returned <code style="font-family:var(--mono);background:var(--paper-shade);padding:2px 8px;border:1px solid var(--ink);">{}</code> for seventy-two hours — and what was actually wrong underneath six layers of plausible-looking bugs.
+  </p>
+
+  <div class="deck">
+    <div class="stat">Sessions <strong>~12</strong></div>
+    <div class="stat">Plausible causes ruled out <strong>9</strong></div>
+    <div class="stat">Actual root cause <strong>1</strong></div>
+    <div class="stat">Final fix length <strong>1 line</strong></div>
+  </div>
+</div>
+
+<!-- ===== BRIEF ===== -->
+<section>
+  <div class="section-label">§ 01 — The Brief</div>
+  <div class="brief">
+    <div class="brief-left">
+      <p class="pull">
+        Build an embedded Shopify app that scores how well a merchant's products are <em>readable by AI search engines</em> — and ship the first version in a day.
+      </p>
+    </div>
+    <div class="brief-right">
+      <p>The product is <strong>AI Layer</strong>. The thesis: most storefronts are written for Google, not for ChatGPT, Perplexity, or Gemini. The opportunity sits in the gap between traditional SEO and the answer-engine layer that ranks <em>citeable</em>, <em>structured</em>, <em>parseable</em> commerce.</p>
+      <p>The technical brief was small: a Shopify Remix app, embedded in the merchant's admin, that authenticates, reads products via the Admin GraphQL API, and renders a visibility score with per-product checks. A V0. Nothing exotic.</p>
+      <p>The reality of getting there is what this document is about. Every plausible cause was checked. Most of them were wrong in instructive ways. The one that was right was almost invisible — a single column name and a single sentence buried in Shopify's API error response that the wrapping library had been swallowing.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TIMELINE ===== -->
+<section>
+  <div class="section-label">§ 02 — Field Notes</div>
+  <h2 class="section-title">The chase, in stations.</h2>
+
+  <div class="timeline-controls">
+    <button class="filter-btn active" data-filter="all">All stations</button>
+    <button class="filter-btn" data-filter="root">Root causes</button>
+    <button class="filter-btn" data-filter="trap">Wrong turns</button>
+    <button class="filter-btn" data-filter="win">Breakthroughs</button>
+  </div>
+
+  <div class="timeline" id="timeline"></div>
+  <div class="timeline-empty" id="timeline-empty">
+    <div class="em-title">No stations match.</div>
+    <div class="em-sub">Try a different filter above.</div>
+  </div>
+</section>
+
+<!-- ===== METHOD ===== -->
+<section>
+  <div class="section-label">§ 03 — Method</div>
+  <h2 class="section-title">What actually worked.</h2>
+  <div class="method-grid">
+    <div class="method">
+      <div class="method-num">01 / Discipline</div>
+      <h3>Measure, don't guess.</h3>
+      <p>Every plausible fix was tested as a hypothesis against a measurement. The bug shifted shape across the chase — but it never shifted because of a guess. Each fix only happened after a log line, a database query, or a network response forced it.</p>
+    </div>
+    <div class="method">
+      <div class="method-num">02 / Layering</div>
+      <h3>One unknown at a time.</h3>
+      <p>The app's authentication stack has five distinct layers — token exchange, App Bridge handshake, session storage, scope grants, API wrapping. Each was isolated and tested in turn. Skipping layers would have meant solving the right problem in the wrong place.</p>
+    </div>
+    <div class="method">
+      <div class="method-num">03 / Bypass</div>
+      <h3>Unwrap the abstraction.</h3>
+      <p>The breakthrough came from a raw <code>fetch()</code> to the Admin API that bypassed Shopify's GraphQL client entirely. The wrapper had been swallowing the actual error message. One direct call surfaced the literal sentence Shopify's API wanted us to read: <em>"non-expiring access tokens are no longer accepted."</em></p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== RESULT ===== -->
+<section>
+  <div class="section-label">§ 04 — The Result</div>
+  <div class="result-wrap">
+    <div class="result-copy">
+      <h3>A real score, on real products, rendered inside Shopify Admin.</h3>
+      <p>17 products analysed. Five checks per product. A weighted visibility score. The first render — after three days of <code style="font-family:var(--mono);background:var(--paper-shade);padding:1px 6px;border:1px solid var(--ink);">{}</code> — landed as a working dashboard with five honest insights about what the dev store was missing for AI-search readability.</p>
+      <p>The product works. The architecture is on Shopify's current expiring-token authentication model, ahead of the merchants still on deprecated tutorials. The next phase is generative — turning each red check into a one-click fix.</p>
+    </div>
+
+    <div class="dashboard-mock" aria-label="Dashboard screenshot recreation">
+      <div class="dash-title">AI Layer</div>
+      <div class="dash-score-row">
+        <div class="ring-wrap">
+          <svg viewBox="0 0 100 100">
+            <circle class="ring-bg" cx="50" cy="50" r="42"/>
+            <circle class="ring-fg" cx="50" cy="50" r="42" stroke-dasharray="263.9" stroke-dashoffset="145"/>
+          </svg>
+          <div class="ring-num">45<small>/100</small></div>
+        </div>
+        <div>
+          <div class="dash-headline">AI Visibility Score</div>
+          <div class="dash-sub">Analysed 17 products. Score reflects how well descriptions, structured data and metadata support AI-powered search and discovery.</div>
+          <span class="badge warn">Needs work</span>
+        </div>
+      </div>
+      <div>
+        <div class="check-row">
+          <div>
+            <div class="check-label">Rich description</div>
+            <div class="check-detail">Description is 50+ characters</div>
+          </div>
+          <div class="check-right">
+            <span class="check-count">0/17</span>
+            <span class="badge crit">0%</span>
+          </div>
+        </div>
+        <div class="check-row">
+          <div>
+            <div class="check-label">Product images</div>
+            <div class="check-detail">At least one image uploaded</div>
+          </div>
+          <div class="check-right">
+            <span class="check-count">16/17</span>
+            <span class="badge ok">94%</span>
+          </div>
+        </div>
+        <div class="check-row">
+          <div>
+            <div class="check-label">Non-zero price</div>
+            <div class="check-detail">Primary variant has a price above $0</div>
+          </div>
+          <div class="check-right">
+            <span class="check-count">17/17</span>
+            <span class="badge ok">100%</span>
+          </div>
+        </div>
+        <div class="check-row">
+          <div>
+            <div class="check-label">SEO title &amp; description</div>
+            <div class="check-detail">Custom SEO title and meta description both filled in</div>
+          </div>
+          <div class="check-right">
+            <span class="check-count">2/17</span>
+            <span class="badge crit">12%</span>
+          </div>
+        </div>
+        <div class="check-row">
+          <div>
+            <div class="check-label">Vendor &amp; SKU</div>
+            <div class="check-detail">Brand (vendor) set and SKU filled on primary variant</div>
+          </div>
+          <div class="check-right">
+            <span class="check-count">3/17</span>
+            <span class="badge crit">18%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TAKEAWAYS ===== -->
+<section>
+  <div class="section-label">§ 05 — Takeaways</div>
+  <h2 class="section-title">What this proves.</h2>
+  <div class="method-grid">
+    <div class="method">
+      <div class="method-num">For Shopify work</div>
+      <h3>Tutorials lag the API.</h3>
+      <p>Shopify deprecated non-expiring offline tokens in April 2026. Every embedded-app tutorial older than that is now wrong in the same silent way: it builds an app that <em>installs cleanly</em> and then 403s on the first Admin API call. Migrating to <code>expiringOfflineAccessTokens: true</code> is the new baseline.</p>
+    </div>
+    <div class="method">
+      <div class="method-num">For client work</div>
+      <h3>Three layers up. One layer down.</h3>
+      <p>The visible symptom was the page returning <code>{}</code>. The actual cause was four layers below that, in a deprecation notice the wrapping library never logged. Holding both ends of the abstraction at once — and bypassing it when stuck — is the move.</p>
+    </div>
+    <div class="method">
+      <div class="method-num">For AI Layer</div>
+      <h3>The product exists.</h3>
+      <p>What started as a one-day prototype is a deployed, authenticated, real-data embedded Shopify app on the current auth model, ready for Phase 2: turning red checks into one-click AI-generated fixes for descriptions, SEO, and structured data.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div>© Zaza / 2026 · AI Layer · Built with Shopify Remix, Prisma 6, App Bridge v4, Railway</div>
+  <div>End of Vol. 01</div>
+</footer>
+
+<script>
+  // === TIMELINE DATA ===
+  const stations = [
+    {
+      n: "01", kind: "step", tag: "Symptom",
+      title: "The app returns {} instead of the dashboard.",
+      symptom: "OAuth completes. Permissions accepted. The embedded iframe loads — and renders two characters of JSON.",
+      detail: "<p>The app installs cleanly, the OAuth flow appears to work end-to-end, and Shopify's admin places it in the merchant's app list. Opening the app shows a blank panel with literal <code>{}</code> rendered as text. Not an error page. Not a stack trace. Just empty braces, like a JSON object that lost its keys on the way down.</p><p>The temptation is to chase the visible layer — \"why is JSON rendering as text?\" That would be wrong. The braces are the symptom of a loader that bounced before it could return real data. The question is <em>why</em>, and the answer is buried five layers deep.</p>"
+    },
+    {
+      n: "02", kind: "trap", tag: "Wrong turn",
+      title: "App Bridge CDN script and frame-ancestors headers.",
+      symptom: "First plausible cause: the iframe isn't being framed correctly. Add the App Bridge CDN tag and the CSP headers.",
+      detail: "<p>Embedded apps require both an App Bridge script in the document head and the correct <code>Content-Security-Policy: frame-ancestors</code> directive so Shopify's admin can frame them. Both were added. Neither changed the symptom.</p><p>This is the first lesson of the chase: the most documented fix is rarely the bug. It's the one that's easy to recommend, easy to apply, and easy to assume must be it. It wasn't.</p><p class='lesson'>If a fix doesn't move the symptom, the symptom isn't measuring that fix.</p>"
+    },
+    {
+      n: "03", kind: "root", tag: "Real bug #1",
+      title: "The redirect at / was dropping every query param.",
+      symptom: "Shopify sends ?shop=...&host=...&embedded=1 to the app's root URL. The root loader did redirect(\"/app\") — bare.",
+      detail: "<p>The first real cause, found by logging the URL the <code>/app</code> loader was actually receiving. It was arriving naked — no <code>shop</code>, no <code>host</code>, no <code>embedded=1</code>, not even <code>https://</code>. The embedded context Shopify had carefully prepared at the root URL was being thrown away one hop later, by a bare redirect.</p><div class='codeblock'>// before — drops every param Shopify sent\nexport const loader = () => redirect(\"/app\");\n\n// after — forwards the embedded context intact\nexport const loader = ({ request }) =&gt; {\n  const url = new URL(request.url);\n  return redirect(`/app${url.search}`);\n};</div><p>This was the first fix that moved the dial. Sessions started being created. Tokens started being persisted. The empty braces became a 403.</p><p class='lesson'>A redirect that drops its query string is, in an embedded auth context, a silent denial-of-service against your own loader.</p>"
+    },
+    {
+      n: "04", kind: "win", tag: "Breakthrough",
+      title: "First row in the Session table.",
+      symptom: "offline_staging-1-2319.myshopify.com — scope read_content,read_products — accessToken shpat_...",
+      detail: "<p>After the redirect fix, the OAuth handshake reached the Prisma session storage and wrote a row. This was the first hard proof that token exchange was actually completing. The scope was correct. An access token was stored. The whole auth chain — from install permission screen to persistent session — was operating as designed.</p><p>And yet the app still wouldn't render. The braces were gone. They had been replaced with something cleaner and, in some ways, worse: a flat 403 on every render. A working authentication system that nonetheless couldn't read products.</p>"
+    },
+    {
+      n: "05", kind: "trap", tag: "Wrong turn",
+      title: "Scopes, reinstalls, and re-granting product access.",
+      symptom: "The install prompt clearly listed \"View products.\" The session row's scope column read read_content,read_products. And every products query still returned 403.",
+      detail: "<p>The natural next hypothesis: the merchant granted scopes, but the stored token predated the scope change and didn't actually carry product access. The fix would be a clean uninstall and reinstall to re-mint the token with current scopes.</p><p>Done. The install screen showed \"View products,\" the install completed, a fresh session row appeared with the correct scope string. The products query still 403'd. Whatever was wrong, it wasn't a stale-token scope problem in the way every Shopify tutorial describes it.</p><p class='lesson'>The data in the session row tells you what the row <em>says</em>. It doesn't tell you what the API server actually <em>thinks</em> about the token.</p>"
+    },
+    {
+      n: "06", kind: "root", tag: "Real bug #2",
+      title: "Railway terminates TLS at the edge. The loader was seeing http://.",
+      symptom: "Every log line showed [app loader] hit http://aeo-optimizer-production-d9be.up.railway.app/app — never https.",
+      detail: "<p>An external Shopify expert reading the diagnosis caught what we'd all seen and ignored: every loader log was <code>http://</code>, not <code>https://</code>. Railway's edge proxy terminates TLS and forwards plain HTTP to the container, exactly like every modern PaaS. Express, by default, doesn't trust the proxy, so <code>request.url</code> reflects the inner connection, not the outer one. Shopify validates origin against the appUrl. Mismatched schemes produce a flickering 302/403 dance that looks exactly like our symptom.</p><div class='codeblock'>// server.js — single line\napp.set(\"trust proxy\", 1);</div><p>One line. The loader URLs flipped to <code>https://</code> on the next deploy. The 302 bounces stopped. A single clean 403 remained — different from before, and now the only thing left to crack.</p><p class='lesson'>Anything sitting behind a TLS-terminating proxy needs explicit trust-proxy configuration, or every URL-shaped check in your stack is silently lying.</p>"
+    },
+    {
+      n: "07", kind: "trap", tag: "Wrong turn",
+      title: "ErrorBoundary, CSP headers, v3_singleFetch propagation.",
+      symptom: "Theory: the 302 bounce is real, and App Bridge isn't catching it because the route lacks an ErrorBoundary exporting boundary.error().",
+      detail: "<p>This theory was correct as a code-quality fix and incorrect as the root cause. The leaf route did need an <code>ErrorBoundary</code> exporting <code>boundary.error()</code>. The <code>/app</code> response did need its CSP headers propagated through <code>boundary.headers</code> under Remix's v3 single fetch.</p><p>Both were added. Both belong in the production template. Neither moved the symptom. The 403 persisted, identical, on every reopen.</p><p>This is the trap of <em>plausible technical-debt fixes</em> during a debugging chase: they look like progress, they pattern-match to known Shopify gotchas, they sometimes even need doing. But unless they move the measurement, they aren't <em>this</em> bug.</p>"
+    },
+    {
+      n: "08", kind: "win", tag: "Breakthrough",
+      title: "Bypass the wrapper. Call the Admin API directly.",
+      symptom: "Diagnostic move: drop admin.graphql() entirely. Use the raw access token in a plain fetch() against the Admin API. See what Shopify actually returns.",
+      detail: "<p>This is the move that broke the case open. The Shopify Remix library's <code>admin.graphql()</code> wraps every Admin API call in a client that, for reasons of token-exchange retry behavior, was returning a 403 Response object with an unread <code>ReadableStream</code> body. The real error message was inside that stream. Nobody had read it.</p><div class='codeblock'>const directRes = await fetch(\n  `https://${session.shop}/admin/api/2025-07/graphql.json`,\n  {\n    method: \"POST\",\n    headers: {\n      \"Content-Type\": \"application/json\",\n      \"X-Shopify-Access-Token\": session.accessToken,\n    },\n    body: JSON.stringify({ query: \"{ shop { name } }\" }),\n  }\n);\nconsole.log(\"status:\", directRes.status);\nconsole.log(\"body:\", await directRes.text());</div><p>The response came back. Status 403. And the body, for the first time in days, contained a complete English sentence.</p><p class='lesson'>When an abstraction's error path returns a Response whose body you haven't read, you don't know what the API actually said. Unwrap. Read the bytes.</p>"
+    },
+    {
+      n: "09", kind: "root", tag: "ACTUAL root cause",
+      title: "\"Non-expiring access tokens are no longer accepted for the Admin API.\"",
+      symptom: "[diag] direct fetch body: {\"errors\":\"[API] Non-expiring access tokens are no longer accepted for the Admin API. Start using expiring offline tokens.\"}",
+      detail: "<p>This is the sentence Shopify's API server had been trying to say all along. Every <code>shpat_</code> prefix token — the format every embedded-app tutorial on the internet older than April 2026 produces — is now structurally rejected. The Admin API requires the new expiring-token format (<code>shpua_</code>), with rotation handled by a refresh token (<code>shprt_</code>).</p><p>The fix was conceptually simple and operationally large:</p><div class='codeblock'>// app/shopify.server.js\nfuture: {\n  unstable_newEmbeddedAuthStrategy: true,\n  expiringOfflineAccessTokens: true,  // new\n},</div><p>But that flag only exists in <code>@shopify/shopify-app-remix 4.x</code>, which requires <code>shopify-api 13.x</code>, which requires <code>session-storage-prisma 9.x</code>, which requires <code>@prisma/client 6.x</code>, which requires <code>session-storage-memory 6.x</code>. A coordinated upgrade across six packages, plus an <code>.npmrc</code> with <code>legacy-peer-deps=true</code> for Railway's <code>npm ci</code> to resolve cleanly, plus two new optional fields on the Prisma Session model for the refresh token and its expiry.</p><p>And one more invisible step.</p>"
+    },
+    {
+      n: "10", kind: "root", tag: "Final fix",
+      title: "One column name. refreshTokenExpires, not refreshTokenExpiresAt.",
+      symptom: "Application Error. PrismaClientValidationError: Unknown argument `refreshTokenExpires`. Did you mean `refreshTokenExpiresAt`?",
+      detail: "<p>The upgrade deployed. The new library issued an expiring token. The token exchange completed. Then Prisma rejected the write because the schema's column was named <code>refreshTokenExpiresAt</code> but the library writes <code>refreshTokenExpires</code>.</p><p>The library named the field one way. The Prisma adapter expected the field named another way. The error log was hundreds of lines because Prisma includes the entire upsert payload in validation failures. Buried near the end, in fifteen quiet words: <em>Unknown argument `refreshTokenExpires`. Did you mean `refreshTokenExpiresAt`?</em></p><div class='codeblock'>// prisma/schema.prisma — one rename\nrefreshTokenExpires DateTime?</div><p>One column, one rename, one push. The next deploy ran <code>prisma db push</code>, recreated the column with the right name, accepted the next session write, and the loader finally returned the dashboard payload it had been trying to return since the beginning.</p><p class='lesson'>The final fix in a long debugging chase is almost always a one-line change. The work was earning the right to know which line.</p>"
+    },
+    {
+      n: "11", kind: "win", tag: "Result",
+      title: "First real render. AI Visibility Score: 45/100 on 17 products.",
+      symptom: "After three days, the dashboard rendered. Real products. Real scores. Real per-check breakdowns. Not a mock.",
+      detail: "<p>The first real screen showed a 45/100 visibility score across 17 products from the dev store. 0/17 had rich descriptions. 16/17 had images. 17/17 had valid prices. 2/17 had SEO titles. 3/17 had vendor and SKU set.</p><p>Those are the exact insights a real merchant would pay for. The app does the thing it was always supposed to do. The product exists.</p>"
+    },
+  ];
+
+  // === RENDER TIMELINE ===
+  const tl = document.getElementById('timeline');
+  stations.forEach((s, i) => {
+    const el = document.createElement('article');
+    el.className = 'station';
+    el.dataset.kind = s.kind;
+    el.innerHTML = `
+      <div class="station-meta">
+        <span class="station-num">${s.n}</span>
+        <span class="station-tag">${s.tag}</span>
+      </div>
+      <div class="station-body">
+        <div class="station-head">
+          <h3 class="station-title">${s.title}</h3>
+        </div>
+        <div class="station-symptom">${s.symptom}</div>
+        <div class="expand-cue"></div>
+        <div class="station-detail"><div>${s.detail}</div></div>
+      </div>
+    `;
+    el.addEventListener('click', (ev) => {
+      // don't toggle when clicking inside the expanded detail (so users can select text/copy code)
+      if (el.classList.contains('expanded') && ev.target.closest('.station-detail')) return;
+      el.classList.toggle('expanded');
+    });
+    tl.appendChild(el);
+  });
+
+  // === FILTERS ===
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  const empty = document.getElementById('timeline-empty');
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const f = btn.dataset.filter;
+      let visible = 0;
+      document.querySelectorAll('.station').forEach(st => {
+        if (f === 'all' || st.dataset.kind === f) {
+          st.classList.remove('hidden');
+          visible++;
+        } else {
+          st.classList.add('hidden');
+          st.classList.remove('expanded');
+        }
+      });
+      if (empty) empty.classList.toggle('show', visible === 0);
+    });
+  });
+
+  // === EXPAND FIRST STATION BY DEFAULT (only the very first) ===
+  document.querySelector('.station')?.classList.add('expanded');
+</script>
+
+</body>
+</html>
